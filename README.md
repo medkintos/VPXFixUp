@@ -1,6 +1,9 @@
-# VPXMetalDecoder & VPXFixup (`id.medkintos`)
+# VPXMetalDecoder & VPXFixup
 
-**Metal-Accelerated VideoToolbox Driver Bundle (`VPXMetalVADriver.bundle`) & Lilu Kernel Extension (`VPXFixup.kext`) for VP8 and VP9 on macOS (Hackintosh)**
+**Enabling VP8 and VP9 Hardware Decoding on CFL/CML based Hackintosh with Metal-Accelerated VideoToolbox Driver Bundle (`VPXMetalVADriver.bundle`) & Lilu Kernel Extension (`VPXFixup.kext`)**
+
+<img width="1920" height="1080" alt="Screenshot 2026-11-04 at 16 35 42" src="https://github.com/user-attachments/assets/748d05b7-fae1-4272-bcc3-93db9df93fb6" />
+
 
 > 📖 **Deep-Dive Architecture Guide:** See [**HOW_IT_WORKS.md**](./HOW_IT_WORKS.md) for a detailed explanation of the kernel hooks, `unfairgva=4` vs. WebKit GPU Sandbox mechanics, and the Metal compute decoding pipeline.
 
@@ -28,17 +31,17 @@ On Intel-based macOS systems (including Coffee Lake, Comet Lake, and Ice Lake sy
 
 ## Solution Architecture
 
-This repository provides a complete two-part solution under the `id.medkintos` namespace:
+This repository provides a complete two-part solution:
 
-### 1. `VPXFixup.kext` (`id.medkintos.VPXFixup`)
+### 1. `VPXFixup.kext`
 A lightweight **Lilu kernel extension plugin** targeting macOS Sequoia (Darwin 24) and macOS Tahoe (Darwin 25) that resolves the conflict between WebKit's GPU Sandbox, `AppleGVA`, and Apple Music DRM:
 * **Kernel MAC Policy & IORegistry Hook:** Hooks XNU's `_mac_iokit_check_get_property`, `_is_io_registry_entry_get_property_bin_buf` (and related Mach MIG traps), and `IORegistryEntry::copyProperty` in the kernel.
 * **Per-Process `hwgva-id` ➔ `board-id` Redirection:**
   * **For Apple Music & FairPlay (`Music`, `fairplayd`, `AMP*`):** Preserves the `hwgva-id` lookup untouched so `unfairgva=4` returns the spoofed `iMacPro1,1` board ID (`Mac-7BA5B2D9E42DDD94`) and Apple Music lossless/DRM streaming works without interruption.
-  * **For WebKit, Safari, Yab, and VideoToolbox processes:** Rewrites `"hwgva-id"` in-place to `"board-id"` before `Sandbox.kext` evaluates the MAC policy check and before `IORegistryEntry` looks up the property. `Sandbox.kext` permits `"board-id"`, and `AppleGVA` receives the native SMBIOS `board-id` (e.g. `Mac-0CFF9C7C2B63DF8D` / `MacBookAir9,1`), enabling native Intel GuC/GVA VP9 (`vp09`) hardware acceleration across unlimited consecutive videos without ever falling back to `avc1`.
+  * **For WebKit based browsers (such as Safari and Yab), and VideoToolbox processes:** Rewrites `"hwgva-id"` in-place to `"board-id"` before `Sandbox.kext` evaluates the MAC policy check and before `IORegistryEntry` looks up the property. `Sandbox.kext` permits `"board-id"`, and `AppleGVA` receives the native SMBIOS `board-id` (e.g. `Mac-0CFF9C7C2B63DF8D` / `MacBookAir9,1`), enabling native Intel GuC/GVA VP9 (`vp09`) hardware acceleration across unlimited consecutive videos without ever falling back to `avc1`.
 * **Kernel Flag Enforcement:** Forces `AppleVTD_force_enable = 1` if present in the kernel.
 
-### 2. `VPXMetalVADriver.bundle` (`id.medkintos.videodecoder.vpx.metal`)
+### 2. `VPXMetalVADriver.bundle`
 A standalone VideoToolbox plugin driver bundle and macOS MediaExtension (`MEVideoDecoder`) that provides Metal compute shader acceleration for VP8 (`vp08`) and VP9 (`vp09`, `qvp9`):
 * **GPU Compute IDCT / IADST:** Parallel 2D Inverse Discrete Cosine & Sine Transforms (`4x4`, `8x8`, `16x16`, `32x32`) executing on Metal compute pipelines.
 * **GPU Motion Compensation & In-Loop Deblocking:** 8-tap subpixel interpolation filtering and concurrent horizontal/vertical edge loop filters.
@@ -143,7 +146,7 @@ After rebooting:
   ```bash
   ./build/vpx_metal_test
   ```
-* Open YouTube in **Safari** or **Yab** and open **Stats for nerds** — consecutive 1080p60/4K videos will play smoothly using **`vp09`** hardware acceleration while **Apple Music** continues to play DRM songs without issue.
+* Open YouTube in any WebKit based browsers (such as **Safari** or **Yab**) and open **Stats for nerds** — consecutive 1080p60/4K videos will play smoothly using **`vp09`** hardware acceleration while **Apple Music** continues to play DRM songs without issue.
 
 ---
 
