@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>VPXMetalVADriver</string>
+	<key>CFBundleIdentifier</key>
+	<string>id.medkintos.videodecoder.vpx.metal</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>VPXMetalVADriver</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>11.0</string>
+	<key>CMClassImplementations</key>
+	<array>
+		<dict>
+			<key>CMClassID</key>
+			<string>com.apple.videotoolbox.videodecoder</string>
+			<key>CMClassImplementationID</key>
+			<string>id.medkintos.videodecoder.vpx.metal</string>
+			<key>CMClassImplementationName</key>
+			<string>VP9 Metal Hardware Accelerated Decoder</string>
+			<key>CMClassImplementationVersion</key>
+			<integer>1</integer>
+			<key>CMCopyright</key>
+			<string>Copyright (c) 2024-2026 Hackintosh Open Source Community.</string>
+			<key>CMExecutableArchitectures</key>
+			<array>
+				<string>x86_64</string>
+				<string>arm64</string>
+			</array>
+			<key>CMFactoryFunction</key>
+			<string>VPXMetal_VTDecoder_CreateInstance</string>
+			<key>CMManufacturer</key>
+			<string>Hackintosh</string>
+			<key>CMMatchingInfo</key>
+			<dict>
+				<key>VTCodecType</key>
+				<string>vp09</string>
+				<key>VTIsHardwareAccelerated</key>
+				<true/>
+			</dict>
+		</dict>
+		<dict>
+			<key>CMClassID</key>
+			<string>com.apple.videotoolbox.videodecoder</string>
+			<key>CMClassImplementationID</key>
+			<string>id.medkintos.videodecoder.vp8.metal</string>
+			<key>CMClassImplementationName</key>
+			<string>VP8 Metal Hardware Accelerated Decoder</string>
+			<key>CMClassImplementationVersion</key>
+			<integer>1</integer>
+			<key>CMCopyright</key>
+			<string>Copyright (c) 2024-2026 Hackintosh Open Source Community.</string>
+			<key>CMExecutableArchitectures</key>
+			<array>
+				<string>x86_64</string>
+				<string>arm64</string>
+			</array>
+			<key>CMFactoryFunction</key>
+			<string>VPXMetal_VTDecoder_CreateInstance</string>
+			<key>CMManufacturer</key>
+			<string>Hackintosh</string>
+			<key>CMMatchingInfo</key>
+			<dict>
+				<key>VTCodecType</key>
+				<string>vp08</string>
+				<key>VTIsHardwareAccelerated</key>
+				<true/>
+			</dict>
+		</dict>
+		<dict>
+			<key>CMClassID</key>
+			<string>com.apple.videotoolbox.videodecoder</string>
+			<key>CMClassImplementationID</key>
+			<string>id.medkintos.videodecoder.qvp9.metal</string>
+			<key>CMClassImplementationName</key>
+			<string>QuickTime VP9 Metal Decoder</string>
+			<key>CMClassImplementationVersion</key>
+			<integer>1</integer>
+			<key>CMCopyright</key>
+			<string>Copyright (c) 2024-2026 Hackintosh Open Source Community.</string>
+			<key>CMExecutableArchitectures</key>
+			<array>
+				<string>x86_64</string>
+				<string>arm64</string>
+			</array>
+			<key>CMFactoryFunction</key>
+			<string>VPXMetal_VTDecoder_CreateInstance</string>
+			<key>CMManufacturer</key>
+			<string>Hackintosh</string>
+			<key>CMMatchingInfo</key>
+			<dict>
+				<key>VTCodecType</key>
+				<string>qvp9</string>
+				<key>VTIsHardwareAccelerated</key>
+				<true/>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

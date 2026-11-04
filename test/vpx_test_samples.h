@@ -1,0 +1,46 @@
+/*
+ * vpx_test_samples.h
+ * VPXMetalDecoder - Test Samples for VP8 and VP9
+ *
+ * Copyright (c) 2024-2026 Hackintosh Open Source Community.
+ */
+
+#ifndef VPX_TEST_SAMPLES_H
+#define VPX_TEST_SAMPLES_H
+
+#include <stdint.h>
+#include <stddef.h>
+
+// Minimal valid VP9 Keyframe header (1920x1080, Profile 0, 8-bit, 4:2:0)
+// Bitstream structure:
+// Marker: 0b10 (2 bits)
+// Profile: 0b00 (2 bits) -> Profile 0
+// Show existing frame: 0 (1 bit)
+// Frame type: 0 (1 bit) -> Keyframe
+// Show frame: 1 (1 bit)
+// Error resilient: 0 (1 bit)
+// Sync code: 0x49 0x83 0x42
+// Bit depth: 8, Color space: BT.709 (1), Color range: 0 (video)
+// Subsampling: 4:2:0
+// Width: 1920 (0x077F + 1 = 1920) -> 0x07 0x7F
+// Height: 1080 (0x0437 + 1 = 1080) -> 0x04 0x37
+// Render size same: 0
+static const uint8_t kVP9TestKeyframe1080p[] = {
+    0x82, 0x49, 0x83, 0x42, 0x00, 0x07, 0x7F, 0x04,
+    0x37, 0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60,
+    0x70, 0x80, 0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0,
+    0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
+};
+
+// Minimal valid VP8 Keyframe header (1280x720)
+// Tag: 0x00 0x00 0x00 (Keyframe, version 0, show frame 0)
+// Start code: 0x9D 0x01 0x2A
+// Width: 1280 (0x0500)
+// Height: 720 (0x02D0)
+static const uint8_t kVP8TestKeyframe720p[] = {
+    0x10, 0x00, 0x00, 0x9D, 0x01, 0x2A, 0x00, 0x05,
+    0xD0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x38, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85
+};
+
+#endif /* VPX_TEST_SAMPLES_H */

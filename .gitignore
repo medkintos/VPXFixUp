@@ -1,0 +1,9 @@
+build/
+dist/
+debug/
+*.o
+*.exp
+*ssh*
+*.dSYM
+.DS_Store
+._*
