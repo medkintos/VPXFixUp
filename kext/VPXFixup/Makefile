@@ -9,7 +9,7 @@ MACOSX_MIN_VER ?= 15.0
 CFLAGS = -arch x86_64 -isysroot $(SDK) -mmacosx-version-min=$(MACOSX_MIN_VER) \
          -mkernel -nostdinc -fno-builtin -fno-rtti -fno-exceptions \
          -D__ACIDANTHERA_MAC_SDK -DLILU_KEXTPATCH_SUPPORT \
-         -DPRODUCT_NAME=VPXFixup -DMODULE_VERSION=1.0.0 \
+         -DPRODUCT_NAME=VPXFixup -DMODULE_VERSION=1.0.1 \
          -I$(SDK)/System/Library/Frameworks/Kernel.framework/Headers \
          -I$(LILU_ROOT) \
          -I. -std=c++14 -O2 -Wall -Wno-sign-conversion -Wno-shadow

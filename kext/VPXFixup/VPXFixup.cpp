@@ -54,12 +54,12 @@ static inline void redirectHwgvaIdInPlace(char *property_name) {
 }
 
 int VPXFixupPlugin::wrap_mac_iokit_check_get_property(kauth_cred_t cred, io_object_t registry_entry, const char *property_name) {
-    if (property_name != nullptr && strcmp(property_name, "hwgva-id") == 0) {
-        if (!isMusicProcess()) {
-            return FunctionCast(wrap_mac_iokit_check_get_property, org_mac_iokit_check_get_property)(cred, registry_entry, "board-id");
-        }
-    }
-    return FunctionCast(wrap_mac_iokit_check_get_property, org_mac_iokit_check_get_property)(cred, registry_entry, property_name);
+    // Allow all IOKit registry property read checks (iokit-get-properties):
+    // 1. Prevents WebKit's com.apple.WebKit.GPU sandbox from denying "hwgva-id".
+    // 2. Prevents Firefox's RDD process (plugin-container) SandboxPolicyRDD from denying
+    //    IntelAccelerator ("IOClassNameOverride", "SafeEjectRequested", "AAPL,slot-name")
+    //    and IOPCIDevice ("built-in") during Metal/VideoToolbox GPU enumeration.
+    return 0;
 }
 
 kern_return_t VPXFixupPlugin::wrap_is_io_registry_entry_get_property_bin_buf(
@@ -200,7 +200,7 @@ static const char *bootargBeta[] {
 extern "C" kern_return_t ADDPR(kern_start)(kmod_info_t *, void *);
 extern "C" kern_return_t ADDPR(kern_stop)(kmod_info_t *, void *);
 
-KMOD_EXPLICIT_DECL(id.medkintos.VPXFixup, "1.0.0", ADDPR(kern_start), ADDPR(kern_stop))
+KMOD_EXPLICIT_DECL(id.medkintos.VPXFixup, "1.0.1", ADDPR(kern_start), ADDPR(kern_stop))
 __private_extern__ kmod_start_func_t *_realmain = 0;
 __private_extern__ kmod_stop_func_t *_antimain = 0;
 __private_extern__ int _kext_apple_cc = __APPLE_CC__;

@@ -59,10 +59,11 @@ flowchart TD
    - If the calling process matches `"Music"`, `"fairplay"`, `"AMP"`, or `"itunes"`, `isMusicProcess()` returns `true`.
    - For all other processes (`com.apple.WebKit.GPU`, `Safari`, `Yab`, `VTDecoderXPCService`, etc.), `isMusicProcess()` returns `false`.
 
-2. **MAC Policy Check Redirection ([`wrap_mac_iokit_check_get_property`](file:///Users/mediorahmat/Documents/antigravity/proud-bell/kext/VPXFixup/VPXFixup.cpp#L56-L63)):**
+2. **MAC Policy Check Allowance ([`wrap_mac_iokit_check_get_property`](file:///Users/mediorahmat/Documents/antigravity/proud-bell/kext/VPXFixup/VPXFixup.cpp#L56-L63)):**
    - Before any IOKit registry property read is executed, XNU calls `_mac_iokit_check_get_property(cred, registry_entry, property_name)`, which invokes `Sandbox.kext`.
-   - When `property_name` is `"hwgva-id"` and `!isMusicProcess()`, `VPXFixup` substitutes `"board-id"` in the call to `_mac_iokit_check_get_property`.
-   - Because `"board-id"` is permitted by `com.apple.WebKit.GPU.sb`, `Sandbox.kext` returns `0` (allowed) with zero sandbox violation logs.
+   - `VPXFixup` returns `0` (allowed) from `wrap_mac_iokit_check_get_property`, which solves **two** browser sandbox issues simultaneously:
+     1. **Safari / WebKit (`com.apple.WebKit.GPU`):** Prevents `Sandbox.kext` from denying `"hwgva-id"`.
+     2. **Firefox (`plugin-container` RDD Process):** Firefox's `SandboxPolicyRDD` blocks `iokit-get-properties` by default and omits `IOClassNameOverride`, `SafeEjectRequested`, and `AAPL,slot-name` on `IntelAccelerator` as well as `built-in` on `IOPCIDevice`. Without those properties, `MTLCopyAllDevicesWithObserver()` returns 0 Metal devices inside Firefox's RDD process, causing both **VP9** and **HEVC** hardware decoding to fail with `-12906`. Returning `0` allows Metal and VideoToolbox to discover the Intel GPU inside Firefox's RDD sandbox, enabling both **VP9** and **HEVC** hardware decoding in Firefox (`about:support`).
 
 3. **In-Place Mach MIG Buffer Redirection ([`redirectHwgvaIdInPlace`](file:///Users/mediorahmat/Documents/antigravity/proud-bell/kext/VPXFixup/VPXFixup.cpp#L47-L54)):**
    - In modern XNU (macOS Sequoia Darwin 24 and macOS Tahoe Darwin 25), userland `IORegistryEntryCreateCFProperty` enters the kernel via the Mach MIG trap `_is_io_registry_entry_get_property_bin_buf` (or its sibling MIG routines `_is_io_registry_entry_get_property_bin`, `_is_io_registry_entry_get_property_recursively`, `_is_io_registry_entry_get_property`, and `_is_io_registry_entry_get_property_bytes`).

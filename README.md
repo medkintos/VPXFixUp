@@ -39,6 +39,7 @@ A lightweight **Lilu kernel extension plugin** targeting macOS Sequoia (Darwin 2
 * **Per-Process `hwgva-id` ➔ `board-id` Redirection:**
   * **For Apple Music & FairPlay (`Music`, `fairplayd`, `AMP*`):** Preserves the `hwgva-id` lookup untouched so `unfairgva=4` returns the spoofed `iMacPro1,1` board ID (`Mac-7BA5B2D9E42DDD94`) and Apple Music lossless/DRM streaming works without interruption.
   * **For WebKit based browsers (such as Safari and Yab), and VideoToolbox processes:** Rewrites `"hwgva-id"` in-place to `"board-id"` before `Sandbox.kext` evaluates the MAC policy check and before `IORegistryEntry` looks up the property. `Sandbox.kext` permits `"board-id"`, and `AppleGVA` receives the native SMBIOS `board-id` (e.g. `Mac-0CFF9C7C2B63DF8D` / `MacBookAir9,1`), enabling native Intel GuC/GVA VP9 (`vp09`) hardware acceleration across unlimited consecutive videos without ever falling back to `avc1`.
+  * **For Firefox (`plugin-container` RDD Process):** Permits `iokit-get-properties` checks (`IOClassNameOverride`, `SafeEjectRequested`, `AAPL,slot-name` on `IntelAccelerator` and `built-in` on `IOPCIDevice`) in `_mac_iokit_check_get_property` so `MTLCopyAllDevicesWithObserver()` and `VideoToolbox` can enumerate the Intel GPU inside Firefox's RDD sandbox, enabling **VP9 (`vp09`) and HEVC (`hvc1`) hardware decoding** in Firefox (`about:support`).
 * **Kernel Flag Enforcement:** Forces `AppleVTD_force_enable = 1` if present in the kernel.
 
 ### 2. `VPXMetalVADriver.bundle`
