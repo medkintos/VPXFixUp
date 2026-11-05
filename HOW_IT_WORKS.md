@@ -1,6 +1,6 @@
 # How It Works: `VPXFixup.kext` (`id.medkintos.VPXFixup`)
 
-This document explains the root causes of VP9 and HEVC hardware acceleration failures across **Safari**, **WebKit browsers (Yab)**, and **Mozilla Firefox** on Intel Hackintosh systems running macOS Sequoia and macOS Tahoe, and how **`VPXFixup.kext`** (`id.medkintos.VPXFixup`) solves them in the kernel without breaking Apple Music FairPlay DRM.
+This document explains the root causes of VP9 and HEVC hardware acceleration failures across **Safari**, **WebKit browsers (Yab)**, and **Mozilla Firefox** on Intel Hackintosh systems running **macOS Sonoma (14.0+)**, **macOS Sequoia (15.0+)**, and **macOS Tahoe (26.0+)**, and how **`VPXFixup.kext`** (`id.medkintos.VPXFixup`) solves them in the kernel without breaking Apple Music FairPlay DRM.
 
 > 🔗 **Companion Metal VideoToolbox Driver Bundle:** For the standalone Metal compute shader VideoToolbox driver bundle (`VPXMetalVADriver.bundle`), see [**medkintos/VP8MetalDecoder**](https://github.com/medkintos/VP8MetalDecoder).
 

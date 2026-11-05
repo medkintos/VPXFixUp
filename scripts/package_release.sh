@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Package VPXFixup.kext into a unified standalone distribution package
-# supporting both macOS Sequoia (15.0+ / Darwin 24) and macOS Tahoe (26.0+ / Darwin 25)
+# supporting macOS Sonoma (14.0+ / Darwin 23), macOS Sequoia (15.0+ / Darwin 24) and macOS Tahoe (26.0+ / Darwin 25)
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,12 +10,12 @@ DIST_DIR="${ROOT_DIR}/dist"
 
 cd "${ROOT_DIR}"
 
-MIN_OS_VER="15.0"
+MIN_OS_VER="14.0"
 PKG_NAME="VPXFixup-Release"
 PKG_DIR="${DIST_DIR}/${PKG_NAME}"
 
 echo "=========================================================="
-echo " Packaging Unified ${PKG_NAME} (macOS Sequoia 15.0+ & Tahoe 26.0+)"
+echo " Packaging Unified ${PKG_NAME} (macOS Sonoma 14.0+, Sequoia 15.0+ & Tahoe 26.0+)"
 echo "=========================================================="
 
 # 1. Build VPXFixup.kext if compiler is accessible or use prebuilt
@@ -44,12 +44,12 @@ cat << EOF > "${PKG_DIR}/README.txt"
 ========================================================================
  VPXFixup.kext - Lilu Plugin for VP9 & HEVC Hardware Decoding on Hackintosh
  Bundle ID: id.medkintos.VPXFixup (v1.0.1)
- Unified Build: macOS Sequoia (15.0+) & macOS Tahoe (26.0+)
+ Unified Build: macOS Sonoma (14.0+), macOS Sequoia (15.0+) & macOS Tahoe (26.0+)
  Companion Metal Driver Repo: https://github.com/medkintos/VP8MetalDecoder
 ========================================================================
 
 Contents:
-  1. VPXFixup.kext     : Unified Lilu kernel extension plugin (Sequoia & Tahoe)
+  1. VPXFixup.kext     : Unified Lilu kernel extension plugin (Sonoma, Sequoia & Tahoe)
   2. test_hw_decode.sh : Automated hardware decode verification script
                          (Safari, Chrome & Firefox — no browser downloads needed)
 

@@ -28,13 +28,13 @@ On Intel-based macOS systems (including Coffee Lake, Comet Lake, and Ice Lake sy
    - Additionally, if `iMacPro1,1` is seen by `AppleGVA` on an iGPU-only system without a T2 chip or discrete AMD GPU, `AVDCreateGPUAccelerator` fails after the first video session, causing Safari/Yab to permanently mark `vp09` as unsupported and fall back to laggy `avc1` software decoding on subsequent videos.
 2. **The Firefox RDD Process (`plugin-container`) Sandbox Issue:**
    - Mozilla Firefox initializes hardware video decoders inside its **Remote Data Decoder (RDD)** process (`plugin-container`), which applies `SandboxPolicyRDD` with `(deny iokit-get-properties)` and a narrow 16-property whitelist.
-   - On macOS Sequoia and Tahoe, `Metal.framework` and `VideoToolbox` query `IOClassNameOverride`, `SafeEjectRequested`, and `AAPL,slot-name` on `IntelAccelerator` as well as `built-in` on `IOPCIDevice`. Because Firefox's RDD sandbox blocks those property reads, `MTLCopyAllDevicesWithObserver()` returns 0 Metal devices and both **VP9** and **HEVC** hardware decoding fail in Firefox (`about:support`).
+   - On macOS Sonoma, Sequoia, and Tahoe, `Metal.framework` and `VideoToolbox` query `IOClassNameOverride`, `SafeEjectRequested`, and `AAPL,slot-name` on `IntelAccelerator` as well as `built-in` on `IOPCIDevice`. Because Firefox's RDD sandbox blocks those property reads, `MTLCopyAllDevicesWithObserver()` returns 0 Metal devices and both **VP9** and **HEVC** hardware decoding fail in Firefox (`about:support`).
 
 ---
 
 ## Solution: `VPXFixup.kext`
 
-**`VPXFixup.kext`** is a lightweight **Lilu kernel extension plugin** targeting macOS Sequoia (Darwin 24) and macOS Tahoe (Darwin 25) that resolves the conflict between browser GPU sandboxes, `AppleGVA`, and Apple Music DRM:
+**`VPXFixup.kext`** is a lightweight **Lilu kernel extension plugin** targeting **macOS Sonoma (14.0+ / Darwin 23)**, **macOS Sequoia (15.0+ / Darwin 24)**, and **macOS Tahoe (26.0+ / Darwin 25)** that resolves the conflict between browser GPU sandboxes, `AppleGVA`, and Apple Music DRM:
 
 * **Kernel MAC Policy & IORegistry Hook:** Hooks XNU's `_mac_iokit_check_get_property`, `_is_io_registry_entry_get_property_bin_buf` (and related Mach MIG traps), and `IORegistryEntry::copyProperty` in the kernel.
 * **Per-Process `hwgva-id` ➔ `board-id` Redirection:**
@@ -57,7 +57,7 @@ On Intel-based macOS systems (including Coffee Lake, Comet Lake, and Ice Lake sy
 │       └── VPXFixup.hpp           # Kernel patcher declarations
 ├── scripts/
 │   ├── build.sh                   # Clean build script for VPXFixup.kext
-│   ├── package_release.sh         # Builds and packages Sequoia & Tahoe release archives into dist/
+│   ├── package_release.sh         # Builds and packages unified Sonoma, Sequoia & Tahoe release archives into dist/
 │   └── test_hw_decode.sh          # Automated VP9 & HEVC hardware decode verification (Safari, Chrome, Firefox)
 ├── HOW_IT_WORKS.md                # Detailed technical documentation of the kernel hooks
 └── Makefile                       # Top-level build system
@@ -72,14 +72,14 @@ On Intel-based macOS systems (including Coffee Lake, Comet Lake, and Ice Lake sy
 ./scripts/build.sh
 ```
 This produces:
-* `build/VPXFixup.kext` (`x86_64` Lilu kernel extension plugin)
+* `build/VPXFixup.kext` (`x86_64` Lilu kernel extension plugin, minimum OS macOS Sonoma 14.0+)
 
 ### Build Release Packages (`dist/`)
 ```bash
 ./scripts/package_release.sh
 ```
-This builds and generates a **single unified release package** compatible with both **macOS Sequoia (15.0+ / Darwin 24)** and **macOS Tahoe (26.0+ / Darwin 25)**:
-* `dist/VPXFixup-Release.zip` / `dist/VPXFixup-Release.tar.gz` (Unified Sequoia & Tahoe build)
+This builds and generates a **single unified release package** compatible with **macOS Sonoma (14.0+ / Darwin 23)**, **macOS Sequoia (15.0+ / Darwin 24)**, and **macOS Tahoe (26.0+ / Darwin 25)**:
+* `dist/VPXFixup-Release.zip` / `dist/VPXFixup-Release.tar.gz` (Unified Sonoma, Sequoia & Tahoe build)
 
 ---
 

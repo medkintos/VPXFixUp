@@ -1,10 +1,10 @@
 # Makefile for VPXFixup Lilu Plugin
-# Target: macOS Sequoia (Darwin 24) & macOS Tahoe (Darwin 25) x86_64
+# Target: macOS Sonoma (Darwin 23), macOS Sequoia (Darwin 24) & macOS Tahoe (Darwin 25) x86_64
 
 CLANG = /Library/Developer/CommandLineTools/usr/bin/clang++
 SDK = /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk
 LILU_ROOT = ../../external/Lilu/Lilu.kext/Contents/Resources
-MACOSX_MIN_VER ?= 15.0
+MACOSX_MIN_VER ?= 14.0
 
 CFLAGS = -arch x86_64 -isysroot $(SDK) -mmacosx-version-min=$(MACOSX_MIN_VER) \
          -mkernel -nostdinc -fno-builtin -fno-rtti -fno-exceptions \
