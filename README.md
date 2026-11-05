@@ -1,6 +1,6 @@
 # VPXFixup
 
-**Enabling VP9 & HEVC Hardware Decoding on CFL/CML based Hackintosh with Lilu Kernel Extension (`VPXFixup.kext`) while Preserving Apple Music FairPlay DRM (`unfairgva=4`)**
+**Enabling VP9 & HEVC Hardware Decoding on KBL/CFL/CML based Hackintosh with Lilu Kernel Extension (`VPXFixup.kext`) while Preserving Apple Music FairPlay DRM (`unfairgva=4`)**
 
 <img width="1920" height="1080" alt="Screenshot 2026-11-04 at 16 35 42" src="https://github.com/user-attachments/assets/748d05b7-fae1-4272-bcc3-93db9df93fb6" />
 
@@ -10,16 +10,20 @@
 
 ---
 
-## Development Notes & Disclaimer
+## Development Notes & Hardware Compatibility
 
 > [!NOTE]
-> This project is written entirely with AI. The tool has not yet been verified on a wide range of real hardware. Bug reports, hardware compatibility test results, and corrections to the data or implementation are very welcome!
+> This project is written entirely with AI.
+> 
+> **Hardware Status:**
+> * **Confirmed Working:** Intel Kaby Lake (KBL), Coffee Lake (CFL), and Comet Lake (CML) architectures (e.g. Intel HD 620 / UHD 620 / UHD 630).
+> * Bug reports, hardware compatibility test results on other generations, and corrections to the data or implementation are very welcome!
 
 ---
 
 ## Technical Overview
 
-On Intel-based macOS systems (including Coffee Lake, Comet Lake, and Ice Lake systems such as Intel UHD 620 / UHD 630), two competing requirements collide in Apple's media stack:
+On Intel-based macOS systems (including Kaby Lake, Coffee Lake, Comet Lake, and Ice Lake systems such as Intel HD 620 / UHD 620 / UHD 630), two competing requirements collide in Apple's media stack:
 
 1. **The `unfairgva=4` + WebKit Sandbox Conflict (`hwgva-id`):**
    - Users commonly configure `unfairgva=4` in WhateverGreen (`boot-args`) to spoof an `iMacPro1,1` (`Mac-7BA5B2D9E42DDD94`) board identifier via the `hwgva-id` IORegistry property so that **Apple Music** (`Music.app` / `fairplayd`) can play FairPlay DRM-protected audio.
