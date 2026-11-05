@@ -1,4 +1,4 @@
-# VPXFixup (`id.medkintos.VPXFixup`)
+# VPXFixup
 
 **Enabling VP9 & HEVC Hardware Decoding on CFL/CML based Hackintosh with Lilu Kernel Extension (`VPXFixup.kext`) while Preserving Apple Music FairPlay DRM (`unfairgva=4`)**
 
@@ -34,7 +34,7 @@ On Intel-based macOS systems (including Coffee Lake, Comet Lake, and Ice Lake sy
 
 ## Solution: `VPXFixup.kext`
 
-**`VPXFixup.kext`** (`id.medkintos.VPXFixup`) is a lightweight **Lilu kernel extension plugin** targeting macOS Sequoia (Darwin 24) and macOS Tahoe (Darwin 25) that resolves the conflict between browser GPU sandboxes, `AppleGVA`, and Apple Music DRM:
+**`VPXFixup.kext`** is a lightweight **Lilu kernel extension plugin** targeting macOS Sequoia (Darwin 24) and macOS Tahoe (Darwin 25) that resolves the conflict between browser GPU sandboxes, `AppleGVA`, and Apple Music DRM:
 
 * **Kernel MAC Policy & IORegistry Hook:** Hooks XNU's `_mac_iokit_check_get_property`, `_is_io_registry_entry_get_property_bin_buf` (and related Mach MIG traps), and `IORegistryEntry::copyProperty` in the kernel.
 * **Per-Process `hwgva-id` ➔ `board-id` Redirection:**
