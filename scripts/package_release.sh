@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Package VPXFixup.kext into standalone distribution packages
-# for both macOS Sequoia (15.x / Darwin 24) and macOS Tahoe (26.x / Darwin 25)
+# Package VPXFixup.kext into a unified standalone distribution package
+# supporting both macOS Sequoia (15.0+ / Darwin 24) and macOS Tahoe (26.0+ / Darwin 25)
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,44 +10,48 @@ DIST_DIR="${ROOT_DIR}/dist"
 
 cd "${ROOT_DIR}"
 
-package_target() {
-    local TARGET_NAME="$1"
-    local MIN_OS_VER="$2"
-    local PKG_NAME="VPXFixup-${TARGET_NAME}-Release"
-    local PKG_DIR="${DIST_DIR}/${PKG_NAME}"
+MIN_OS_VER="15.0"
+PKG_NAME="VPXFixup-Release"
+PKG_DIR="${DIST_DIR}/${PKG_NAME}"
 
-    echo "=========================================================="
-    echo " Packaging ${PKG_NAME} (min macOS ${MIN_OS_VER})"
-    echo "=========================================================="
+echo "=========================================================="
+echo " Packaging Unified ${PKG_NAME} (macOS Sequoia 15.0+ & Tahoe 26.0+)"
+echo "=========================================================="
 
-    # 1. Build VPXFixup.kext
-    echo "[*] Building VPXFixup.kext (Lilu Plugin) for macOS ${TARGET_NAME} (${MIN_OS_VER})..."
+# 1. Build VPXFixup.kext if compiler is accessible or use prebuilt
+if [ ! -d "${BUILD_DIR}/VPXFixup.kext" ] || [ "${FORCE_REBUILD:-0}" = "1" ]; then
+    echo "[*] Building unified VPXFixup.kext (Lilu Plugin, min macOS ${MIN_OS_VER})..."
     make -C kext/VPXFixup clean all MACOSX_MIN_VER="${MIN_OS_VER}"
     rm -f kext/VPXFixup/*.o
+fi
 
-    # 2. Codesign ad-hoc
-    echo "[*] Applying ad-hoc codesign to VPXFixup.kext..."
-    codesign --force --deep --sign - "${BUILD_DIR}/VPXFixup.kext"
+# 2. Codesign ad-hoc
+echo "[*] Applying ad-hoc codesign to VPXFixup.kext..."
+codesign --force --deep --sign - "${BUILD_DIR}/VPXFixup.kext"
 
-    # 3. Clean and prepare dist directory for this target
-    rm -rf "${PKG_DIR}" "${DIST_DIR}/${PKG_NAME}.zip" "${DIST_DIR}/${PKG_NAME}.tar.gz" "${DIST_DIR}/.DS_Store"
-    mkdir -p "${PKG_DIR}"
+# 3. Clean and prepare dist directory
+rm -rf "${DIST_DIR}"
+mkdir -p "${PKG_DIR}"
 
-    # 4. Copy kext
-    echo "[*] Copying VPXFixup.kext..."
-    cp -R "${BUILD_DIR}/VPXFixup.kext" "${PKG_DIR}/"
+# 4. Copy kext and verification script
+echo "[*] Copying VPXFixup.kext and test_hw_decode.sh..."
+cp -R "${BUILD_DIR}/VPXFixup.kext" "${PKG_DIR}/"
+cp "${SCRIPT_DIR}/test_hw_decode.sh" "${PKG_DIR}/"
+chmod +x "${PKG_DIR}/test_hw_decode.sh"
 
-    # 5. Create README.txt
-    cat << EOF > "${PKG_DIR}/README.txt"
+# 5. Create README.txt
+cat << EOF > "${PKG_DIR}/README.txt"
 ========================================================================
  VPXFixup.kext - Lilu Plugin for VP9 & HEVC Hardware Decoding on Hackintosh
  Bundle ID: id.medkintos.VPXFixup (v1.0.1)
- Target: macOS ${TARGET_NAME} (${MIN_OS_VER}+) / Intel Coffee Lake & Comet Lake
+ Unified Build: macOS Sequoia (15.0+) & macOS Tahoe (26.0+)
  Companion Metal Driver Repo: https://github.com/medkintos/VP8MetalDecoder
 ========================================================================
 
 Contents:
-  1. VPXFixup.kext : Lilu kernel extension plugin (id.medkintos.VPXFixup)
+  1. VPXFixup.kext     : Unified Lilu kernel extension plugin (Sequoia & Tahoe)
+  2. test_hw_decode.sh : Automated hardware decode verification script
+                         (Safari, Chrome & Firefox — no browser downloads needed)
 
 --- OpenCore EFI Installation Guide ---
 
@@ -68,27 +72,21 @@ Contents:
 
 --- Verification ---
 
-- Verify kext is loaded:
+- Run the automated verification suite:
+     ./test_hw_decode.sh
+     ./test_hw_decode.sh --open-safari
+- Or verify kext is loaded manually:
      kmutil showloaded | grep -i vpxfixup
-- Open Safari, Yab, Firefox (about:support), or Chrome (chrome://gpu) and play 1080p60/4K YouTube videos:
-     Codec will remain on hardware-accelerated "vp09" across consecutive videos while Apple Music DRM continues to work!
 EOF
 
-    # 6. Archive into zip and tar.gz
-    echo "[*] Creating zip & tar.gz archives for ${PKG_NAME}..."
-    (
-        cd "${DIST_DIR}"
-        zip -r -q "${PKG_NAME}.zip" "${PKG_NAME}"
-        tar -czf "${PKG_NAME}.tar.gz" "${PKG_NAME}"
-    )
-}
-
-# Build Tahoe Release (macOS 26.0 / Darwin 25)
-package_target "Tahoe" "26.0"
-
-# Build Sequoia Release (macOS 15.0 / Darwin 24)
-package_target "Sequoia" "15.0"
+# 6. Archive into zip and tar.gz
+echo "[*] Creating zip & tar.gz archives for ${PKG_NAME}..."
+(
+    cd "${DIST_DIR}"
+    zip -r -q "${PKG_NAME}.zip" "${PKG_NAME}"
+    tar -czf "${PKG_NAME}.tar.gz" "${PKG_NAME}"
+)
 
 echo ""
-echo "[✓] Distribution packages ready in ${DIST_DIR}:"
+echo "[✓] Unified distribution packages ready in ${DIST_DIR}:"
 ls -lh "${DIST_DIR}"

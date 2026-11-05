@@ -57,7 +57,8 @@ On Intel-based macOS systems (including Coffee Lake, Comet Lake, and Ice Lake sy
 │       └── VPXFixup.hpp           # Kernel patcher declarations
 ├── scripts/
 │   ├── build.sh                   # Clean build script for VPXFixup.kext
-│   └── package_release.sh         # Builds and packages Sequoia & Tahoe release archives into dist/
+│   ├── package_release.sh         # Builds and packages Sequoia & Tahoe release archives into dist/
+│   └── test_hw_decode.sh          # Automated VP9 & HEVC hardware decode verification (Safari, Chrome, Firefox)
 ├── HOW_IT_WORKS.md                # Detailed technical documentation of the kernel hooks
 └── Makefile                       # Top-level build system
 ```
@@ -77,9 +78,8 @@ This produces:
 ```bash
 ./scripts/package_release.sh
 ```
-This clean-builds and generates standalone release packages for both **macOS Sequoia** and **macOS Tahoe**:
-* `dist/VPXFixup-Sequoia-Release.zip` / `dist/VPXFixup-Sequoia-Release.tar.gz` (macOS 15.0+ / Darwin 24)
-* `dist/VPXFixup-Tahoe-Release.zip` / `dist/VPXFixup-Tahoe-Release.tar.gz` (macOS 26.0+ / Darwin 25)
+This builds and generates a **single unified release package** compatible with both **macOS Sequoia (15.0+ / Darwin 24)** and **macOS Tahoe (26.0+ / Darwin 25)**:
+* `dist/VPXFixup-Release.zip` / `dist/VPXFixup-Release.tar.gz` (Unified Sequoia & Tahoe build)
 
 ---
 
@@ -89,10 +89,16 @@ This clean-builds and generates standalone release packages for both **macOS Seq
 2. Copy `VPXFixup.kext` to `EFI/OC/Kexts/VPXFixup.kext`.
 3. Add `VPXFixup.kext` to your `EFI/OC/config.plist` under `Kernel -> Add` **after** `Lilu.kext` and `WhateverGreen.kext`.
 4. Keep `unfairgva=4` in your `boot-args` so Apple Music DRM continues to work!
-5. Reboot and verify that `VPXFixup` is loaded:
+5. Reboot and run the automated hardware decode verification script:
    ```bash
-   kmutil showloaded | grep -i vpxfixup
+   ./scripts/test_hw_decode.sh
    ```
+   * **Zero External Browser Downloads Required:** The script tests `VPXFixup.kext`, direct `VideoToolbox` & `Metal` APIs, live **Safari / WebKit (`MediaCapabilities`)**, and simulated **Google Chrome GPU Sandbox** & **Mozilla Firefox RDD Sandbox** environments out of the box — even if Chrome or Firefox are not installed!
+   * If Chrome or Firefox are installed, it automatically detects them as well.
+   * Pass `--open-safari` or `--open-all` to launch an interactive visual hardware decode test dashboard in your browser(s):
+     ```bash
+     ./scripts/test_hw_decode.sh --open-safari
+     ```
 6. Open YouTube in **Safari**, **Yab**, **Firefox**, or **Google Chrome** and open **Stats for nerds** — consecutive 1080p60/4K videos will play smoothly using **`vp09`** hardware acceleration while **Apple Music** continues to play DRM songs without issue.
 
 ---
