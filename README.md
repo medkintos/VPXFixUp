@@ -113,6 +113,7 @@ This builds and generates a **single unified release package** compatible with *
 * **[Acidanthera](https://github.com/acidanthera)** — For [Lilu](https://github.com/acidanthera/Lilu), [WhateverGreen](https://github.com/acidanthera/WhateverGreen), [MacKernelSDK](https://github.com/acidanthera/MacKernelSDK), and [OpenCorePkg](https://github.com/acidanthera/OpenCorePkg), which provide the kernel patching infrastructure and Hackintosh bootloader ecosystem.
 * **[Apple Inc.](https://opensource.apple.com/)** — For the open-source [XNU kernel](https://github.com/apple-oss-distributions/xnu), [WebKit](https://github.com/WebKit/WebKit), Metal framework, and VideoToolbox APIs.
 * **[Mozilla](https://github.com/mozilla/gecko-dev)** — For Firefox's `AppleDecoderModule`, `AppleVTDecoder`, and macOS RDD sandbox architecture.
+* **[5T33Z0](https://github.com/5T33Z0)** for testing the kext on Kaby Lake iGPU
 * **Google DeepMind Antigravity** — AI pair-programming agent used to research, author, debug, and package this project.
 
 ### Resources & Related Repositories
